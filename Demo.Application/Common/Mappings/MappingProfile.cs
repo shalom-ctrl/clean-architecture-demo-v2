@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Demo.Application.Common.Mappings
@@ -14,31 +12,41 @@ namespace Demo.Application.Common.Mappings
 
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
-            var mapFromType = typeof(IMapFrom<>);
-
-            // 1. Correctly scan for classes that implement the interface
+            var MapFromType = typeof(IMapFrom<>);
+            var MappingMethodName = nameof(IMapFrom<object>.Mapping);
+            bool HasInterface(Type type) => type.IsGenericType && type.GetGenericTypeDefinition() == MapFromType;
             var types = assembly.GetExportedTypes()
-                .Where(t => t.GetInterfaces().Any(i =>
-                    i.IsGenericType && i.GetGenericTypeDefinition() == mapFromType))
+                .Where(t => t.GetInterfaces().Any(HasInterface))
                 .ToList();
+
+            var argumentTypes = new Type[] { typeof(Profile) };
 
             foreach (var type in types)
             {
                 var instance = Activator.CreateInstance(type);
+                var methodInfo = type.GetMethod(MappingMethodName);
 
-                // 2. Find the interface type directly applied to this class (e.g., IMapFrom<Blog>)
-                var implementedInterface = type.GetInterfaces()
-                    .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapFromType);
-
-                if (implementedInterface != null)
+                if(methodInfo != null)
                 {
-                    // 3. Extract the "Mapping" method explicitly from the interface definition
-                    var methodInfo = implementedInterface.GetMethod(nameof(IMapFrom<object>.Mapping));
+                    methodInfo.Invoke(instance, new object[] { this });
+                }
 
-                    // 4. Invoke it against the instance using the current Profile context
-                    methodInfo?.Invoke(instance, new object[] { this });
+                else
+                {
+                    var interfaces = type.GetInterfaces()
+                        .Where(HasInterface)
+                        .ToList();
+                    if (interfaces.Count > 0)
+                    {
+                        foreach (var @interface in interfaces)
+                        {
+                            var interfaceMethodInfo = @interface.GetMethod(MappingMethodName, argumentTypes);
+                            interfaceMethodInfo?.Invoke(instance, new object[] { this });
+                        }
+                    }
                 }
             }
         }
     }
 }
+
