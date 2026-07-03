@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Blogs\Commands\DeleteBlog\" />
     <Folder Include="Common\Behaviours\" />
     <Folder Include="Common\Exceptions\" />
   </ItemGroup>
