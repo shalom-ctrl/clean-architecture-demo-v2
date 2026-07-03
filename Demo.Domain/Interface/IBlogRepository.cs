@@ -13,6 +13,6 @@ namespace Demo.Domain.Interface
         Task<Blog> GetBlogByIdAsync(int id);
         Task<Blog> CreateBlogAsync(Blog blog);
         Task<Blog> UpdateBlogAsync(int id, Blog blog);
-        Task DeleteBlogAsync(int id);
+        Task<int> DeleteBlogAsync(int id);
     }
 }

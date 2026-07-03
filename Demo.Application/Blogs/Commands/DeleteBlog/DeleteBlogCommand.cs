@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Demo.Application.Blogs.Commands.DeleteBlog
 {
-    public class DeleteBlogCommand : IRequest<Unit>
+    public class DeleteBlogCommand : IRequest<int>
     {
         public int Id { get; set; }
     }

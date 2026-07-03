@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Demo.Application.Blogs.Commands.DeleteBlog
 {
-    public class DeleteBlogCommandHandler : IRequestHandler<DeleteBlogCommand, Unit>
+    public class DeleteBlogCommandHandler : IRequestHandler<DeleteBlogCommand, int>
     {
         private readonly IBlogRepository _blogRepository;
 
@@ -16,10 +16,9 @@ namespace Demo.Application.Blogs.Commands.DeleteBlog
         {
             _blogRepository = blogRepository;
         }
-        public async Task<Unit> Handle(DeleteBlogCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(DeleteBlogCommand request, CancellationToken cancellationToken)
         {
-            await _blogRepository.DeleteBlogAsync(request.Id);
-            return Unit.Value;
+            return await _blogRepository.DeleteBlogAsync(request.Id);
         }
     }
 }
