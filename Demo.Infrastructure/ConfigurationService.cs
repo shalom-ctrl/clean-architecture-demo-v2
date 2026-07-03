@@ -18,13 +18,9 @@ namespace Demo.Infrastructure
             IConfiguration configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-            {
-            options.UseSqlite(configuration.GetConnectionString("ApplicationDbContext") ?? 
-                throw new InvalidOperationException("Connection string 'ApplicationDbContext' is not found.")
-            );
-        });
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddTransient<IBlogRepository, BlogRepository>();
+            services.AddScoped<IBlogRepository, BlogRepository>();
             return services;
         }
     }
